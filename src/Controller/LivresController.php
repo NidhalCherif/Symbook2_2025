@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Livres;
+use App\Form\LivresType;
 use App\Repository\LivresRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -32,7 +33,7 @@ final class LivresController extends AbstractController
 
         dd($livre);
     }
-    #[Route('/admin/livres', name: 'app_livres')]
+    #[Route('/admin/livres', name: 'admin_livres')]
     public function all(LivresRepository $rep,PaginatorInterface $paginator, Request $request): Response
     {
         $livres = $paginator->paginate(
@@ -67,24 +68,24 @@ final class LivresController extends AbstractController
 
 
 
-    #[Route('/admin/livres/create', name: 'app_livres_create')]
-    public function create(EntityManagerInterface $em): Response
-    {$livre=new Livres();
-        $date=new \DateTime("2023-02-02");
-        $livre->setTitre('titre 1')
-            ->setSlug('titre-1')
-            ->setImage('https://picsum.photos/200/?id=1')
-            ->setResume('resume 1')
-            ->setEditeur('Eni')
-            ->setDateEdition($date)
-            ->setIsbn('111-111-1111-1111')
-            ->setPrix(200);
-        $em->persist($livre);
-        $em->flush();// insertion dans la base par doctrine les objets persistés
-        return new Response("created new book with id {$livre->getId()}");
+    #[Route('/admin/livres/create', name: 'admin_livres_create')]
+    public function create(Request $request,EntityManagerInterface $em): Response
+    {   $livre=new Livres();
+        //afficher le formulaire
+        $form=$this->createForm(LivresType::class,$livre);
+        //traitement des données issues
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($livre);
+            $em->flush();
+            $this->addFlash('success','Le livre a été bien ajouté');
+            return $this->redirectToRoute('admin_livres');
 
 
+        }
 
+        return $this->render('livres/create.html.twig', [
+            'f' => $form,
+        ]);
     }
-
 }

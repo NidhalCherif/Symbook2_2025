@@ -10,6 +10,7 @@
             <th>Editeur</th>
             <th>Date Edition</th>
             <th>Prix</th>
+            <th>Catégorie</th>
             <th colspan="3">Action</th>
 
         </tr>
@@ -20,6 +21,7 @@
                 <td>{{ livre.editeur }}</td>
                 <td>{{ livre.dateEdition|date('d-m-Y') }}</td>
                 <td>{{ livre.prix }}</td>
+                <td> {{ livre.categorie.libelle }}</td>
                 <td><a href="{{path('app_livres_show',{'id':livre.id})}}">Voir détail...</a></td>
                 <td><a href="{{path('app_livres_delete',{'id':livre.id})}}">Supprimer</a></td>
                 <td><a href="{{path('app_livres_update',{'id':livre.id})}}">Editer</a></td>
